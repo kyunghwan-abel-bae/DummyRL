@@ -1,5 +1,12 @@
 # 로그
 
+참고 URL : 
+- SARSA 코드 예제 : https://jyoondev.tistory.com/154
+- Python_RL_Envs : https://github.com/jellyho/Python_RL_Envs/tree/2aab22dc93b3d2e0380080822a11e395db340c41
+
+2023.01.20
+
+
 2023.01.08
 - 취업 및 수익 발생을 위해서는 파이토치가 유리함.
 - 파이토치를 학습 후, 토치기반으로 DQN화 하면 됨.
