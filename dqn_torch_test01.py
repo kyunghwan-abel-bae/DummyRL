@@ -1,6 +1,5 @@
 from Python_RL_Envs.GridWorld import *
 from DQNTorchAgent import DQNTorchAgent
-# from DQNTorchAgent2 import DQNTorchAgent2
 from matplotlib import pyplot as plt
 
 env = GridWorld(5, 5, state_mode="absolute", goal_included_in_state=False)
@@ -14,8 +13,7 @@ agent = DQNTorchAgent([0,1,2,3])
 
 episodes = []
 scores = []
-# '''
-for E in range(5):
+for E in range(500):
 # for E in range(1000):
     state = env.reset()
     done = False
@@ -26,16 +24,12 @@ for E in range(5):
         action = agent.get_action(state)
 
         next_state, reward, done = env.step((action+1), show=False)
-        # print("update_replay_memory : ", state)
+
         agent.update_replay_memory(state, action, reward, next_state, done)
 
         next_action = agent.get_action(next_state)
 
-        # For DQNAgent1
-        agent.learn(state, action, reward, next_state, next_action)
-
-        # For DQNAgent2
-        # agent.learn()
+        agent.learn()
 
         score += reward
 
@@ -48,4 +42,3 @@ for E in range(5):
 
 plt.plot(episodes, scores)
 plt.show()
-# '''
