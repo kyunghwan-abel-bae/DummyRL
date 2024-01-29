@@ -22,7 +22,6 @@ class DQNTorchModel(nn.Module):
     def __init__(self, num_actions):
         super().__init__()
 
-        self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(2, 12),
             nn.ReLU(),
@@ -40,9 +39,7 @@ class DQNTorchAgent:
 
         self.ACTIONS = np.array(actions)
 
-        self.step_size = 0.01
-        self.discount_factor = 0.9
-        self.epsilon = 0.1
+        self.epsilon = 0.1 # By using epsilon decaying, learning can be stablized.
         self.gamma = 0.99
         self.batch_size = 5
 
