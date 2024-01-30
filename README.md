@@ -8,6 +8,16 @@
 - feature-epsilon-decaying : 생성 및 테스트 필요
 - feature-device-to : 생성 및 테스트 필요
 
+2023.01.29
+- feature-epsilon-decaying 구현 완료 
+
+<B>구현 전(좌), 구현 후(우) </B>
+<p align="center" width="100%">
+<img src="./img/no_epsilon_decaying.png" width="45%"/>
+<img src="./img/epsilon_decaying_adapted.png" width="45%"/>
+
+</p>
+
 2023.01.24
 - 학습 중 랜덤에 따라 쑥 떨어지는 구간이 생기는 것 같다. 그냥 epsilon이 아니라 epsilon decaying을 접목시켜보자.
 - 코랩에서의 모델을 저장하고 로컬에서 반영하는 기능을 테스트하는 것이 필요함.

@@ -52,6 +52,9 @@ class DQNTorchAgent:
     def update_replay_memory(self, current_state, action, reward, next_state, done):
         self.replay_memory.append((current_state, action, reward, next_state, done))
 
+    def decay_epsilon(self, rate):
+        self.epsilon *= rate
+
     def get_q_values(self, state):
         state = torch.tensor(state, dtype=torch.float32)
         q_values = self.model(state)
