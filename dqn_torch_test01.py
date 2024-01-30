@@ -1,3 +1,5 @@
+import time
+
 from Python_RL_Envs.GridWorld import *
 from DQNTorchAgent import DQNTorchAgent
 from matplotlib import pyplot as plt
@@ -13,6 +15,7 @@ agent = DQNTorchAgent([0,1,2,3])
 
 episodes = []
 scores = []
+start_time = time.time()
 for E in range(500):
 # for E in range(1000):
     state = env.reset()
@@ -39,6 +42,9 @@ for E in range(500):
     print(f"episode {E} - score {score}")
     scores.append(score)
     episodes.append(E)
+
+elapsed_time = time.time()-start_time
+print(f"Elapsed Time(seconds) : {elapsed_time}")
 
 plt.plot(episodes, scores)
 plt.show()
