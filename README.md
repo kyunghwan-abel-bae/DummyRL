@@ -17,6 +17,8 @@ GPU는 병렬 연산에 강점이 있어, 대규모 데이터셋과 복잡한 �
 ```
 - 환경 시뮬레이션이나 복잡한 모델이 아닐 경우에는 cpu기반으로 돌려도 되겠다.
 - feature-device-to 구현 완료
+- git diff feature-device-to feature-device-to-comp 를 통해서 device를 반영하는 곳을 비교 분석할 수 있다.
+
 
 2023.01.29
 - feature-epsilon-decaying 구현 완료 
