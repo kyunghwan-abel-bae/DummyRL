@@ -16,7 +16,7 @@ agent = DQNTorchAgent([0,1,2,3])
 episodes = []
 scores = []
 start_time = time.time()
-for E in range(500):
+for E in range(1000):
 # for E in range(1000):
     state = env.reset()
     done = False
@@ -37,7 +37,6 @@ for E in range(500):
         score += reward
 
         state = next_state
-        # break
 
     print(f"episode {E} - score {score}")
     scores.append(score)

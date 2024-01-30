@@ -15,6 +15,7 @@ device = (
     if torch.backends.mps.is_available()
     else "cpu"
 )
+
 print(f"Using {device} device.")
 
 
@@ -45,7 +46,7 @@ class DQNTorchAgent:
 
         self.replay_memory = deque(maxlen=REPLAY_MEMORY_SIZE)
 
-        self.model = DQNTorchModel(len(actions))
+        self.model = DQNTorchModel(len(actions)).to(device)
         self.loss_fn = nn.MSELoss()
         self.optimizer = torch.optim.RMSprop(self.model.parameters())
 
@@ -56,15 +57,15 @@ class DQNTorchAgent:
         self.epsilon *= rate
 
     def get_q_values(self, state):
-        state = torch.tensor(state, dtype=torch.float32)
+        state = torch.tensor(state, dtype=torch.float32).to(device)
         q_values = self.model(state)
-        return q_values.detach().numpy()
+        return q_values.detach().cpu().numpy()
 
     def get_action(self, state):
         if np.random.rand() < self.epsilon:
             action = np.random.choice(self.ACTIONS)
         else:
-            state = torch.tensor(state, dtype=torch.float32)
+            state = torch.tensor(state, dtype=torch.float32).to(device)
             q_values = self.model(state)
             action = torch.argmax(q_values).item() # 0, 1, 2, 3 => 1, 2, 3, 4
 
@@ -76,10 +77,10 @@ class DQNTorchAgent:
 
         samples = random.sample(self.replay_memory, self.batch_size)
 
-        current_input = torch.tensor([sample[0] for sample in samples], dtype=torch.float32)
+        current_input = torch.tensor([sample[0] for sample in samples], dtype=torch.float32).to(device)
         current_q_values = self.model(current_input)
 
-        next_input = torch.tensor([sample[3] for sample in samples], dtype=torch.float32)
+        next_input = torch.tensor([sample[3] for sample in samples], dtype=torch.float32).to(device)
         next_q_values = self.model(next_input)
 
         for i, (current_state, action, reward, _, done) in enumerate(samples):
@@ -96,9 +97,3 @@ class DQNTorchAgent:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-
-
-
-
-
-
