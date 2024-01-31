@@ -1,12 +1,12 @@
 # 로그
 
+
 참고 URL : 
 - SARSA 코드 예제 : https://jyoondev.tistory.com/154
 - Python_RL_Envs : https://github.com/jellyho/Python_RL_Envs/tree/2aab22dc93b3d2e0380080822a11e395db340c41
 
 브랜치 : 
-- feature-epsilon-decaying : 생성 및 테스트 필요
-- feature-device-to : 생성 및 테스트 필요
+- feature-model-save-load : 생성 및 테스트 필요
 
 2023.01.30
 - feature-device-to 구현을 위해 기능을 적용하고 테스트하니 속도가 더 느려지는 현상을 목격했다. 그리고 아래와 같은 결론을 chatgpt를 통해서 받아낼 수 있었다.
