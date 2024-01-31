@@ -23,6 +23,9 @@ for E in range(1000):
 
     score = 0
 
+    if E % 100 == 0:
+        agent.decay_epsilon(0.5)
+
     while not done:
         action = agent.get_action(state)
 
@@ -44,6 +47,8 @@ for E in range(1000):
 
 elapsed_time = time.time()-start_time
 print(f"Elapsed Time(seconds) : {elapsed_time}")
+
+agent.save_model("torch_test")
 
 plt.plot(episodes, scores)
 plt.show()

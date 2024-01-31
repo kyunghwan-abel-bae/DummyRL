@@ -15,7 +15,8 @@ device = (
     if torch.backends.mps.is_available()
     else "cpu"
 )
-
+# for performance
+device = "cpu"
 print(f"Using {device} device.")
 
 
@@ -70,6 +71,11 @@ class DQNTorchAgent:
             action = torch.argmax(q_values).item() # 0, 1, 2, 3 => 1, 2, 3, 4
 
         return action
+
+    def save_model(self, file_name="model"):
+        file_name = file_name + ".pth"
+        torch.save(self.model.state_dict(), file_name)
+        print(f"Saved PyTorch Model State to {file_name}")
 
     def learn(self):
         if len(self.replay_memory) < 10:
