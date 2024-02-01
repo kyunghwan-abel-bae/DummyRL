@@ -17,7 +17,6 @@ episodes = []
 scores = []
 start_time = time.time()
 for E in range(1000):
-# for E in range(1000):
     state = env.reset()
     done = False
 

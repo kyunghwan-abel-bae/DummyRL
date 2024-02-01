@@ -37,17 +37,20 @@ class DQNTorchModel(nn.Module):
 
 
 class DQNTorchAgent:
-    def __init__(self, actions):
+    def __init__(self, actions, epsilon=0.1, saved_model=""):
 
         self.ACTIONS = np.array(actions)
 
-        self.epsilon = 0.1 # By using epsilon decaying, learning can be stablized.
+        self.epsilon = epsilon # By using epsilon decaying, learning can be stablized.
         self.gamma = 0.99
         self.batch_size = 5
 
         self.replay_memory = deque(maxlen=REPLAY_MEMORY_SIZE)
 
         self.model = DQNTorchModel(len(actions)).to(device)
+        if len(saved_model) > 0:
+            self.model.load_state_dict(torch.load(saved_model))
+
         self.loss_fn = nn.MSELoss()
         self.optimizer = torch.optim.RMSprop(self.model.parameters())
 
