@@ -11,7 +11,7 @@ env.add_obstacles(3, 0, 0, include_state=False)
 env.add_obstacles(4, 2, 0, include_state=False)
 env.add_obstacles(2, 4, 0, include_state=False)
 
-agent = DQNTorchAgent([0,1,2,3], 0.0, "torch_test.pth")
+agent = DQNTorchAgent([0,1,2,3], 0.0, "torch_colab_test.pth")
 # agent = DQNTorchAgent([0,1,2,3], 0.1, "torch_test.pth")
 
 episodes = []
