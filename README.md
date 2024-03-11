@@ -5,8 +5,24 @@
 - SARSA 코드 예제 : https://jyoondev.tistory.com/154
 - Python_RL_Envs : https://github.com/jellyho/Python_RL_Envs/tree/2aab22dc93b3d2e0380080822a11e395db340c41
 
+브랜치 : 
+- feature-snake-torch
+
+2024.03.11
+- 실제적인 구현을 위해 current_state의 구조를 노트에 메모하고 분석하게 됐다.
+- sarsa를 dqn전에 미리 구현하여 테스트 및 활용한다는 생각은 사실상 어렵다는 것을 알게 됐다.
+- sarsa는 dqn을 이해하기 위해 기반이 되는 지식정도로 이해하고 넘어가는 것이 좋겠다.
+- sarsa대신 torch를 기반으로 학습을 해보도록 한다.
+
+2024.02.04
+- 먼저 sarsa 버전을 먼저 구현하고 있음.
+- 조금씩 기능을 완성하는 방향으로 접근함.
 
 2024.02.02
+- snake 프로젝트 현재 디텍토리에 추가함.
+- SARSA버전과 Torch버전을 구현하고 다음 예제로 넘어가는 것으로 결정.
+
+2024.02.01
 - feature-model-save-load 구현 완료
 - colab에서 학습한 모델을 로컬에 가져와서 테스트를 마침
 
