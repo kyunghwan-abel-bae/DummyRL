@@ -1,11 +1,12 @@
 import torch
 from torch import nn
 
+from einops import rearrange
+
 from snake import NUM_CHANNELS, NUM_ACTIONS
 from collections import deque
 import random
 import numpy as np
-
 
 
 class DQNAgentModel(nn.Module):
@@ -15,19 +16,21 @@ class DQNAgentModel(nn.Module):
         self.conv2 = nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=0)
         self.dropout = nn.Dropout(p=0.1)
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(32 * (field_height - 2) * (field_width - 2), 256)
+        self.fc1 = nn.Linear(32 * (field_height - 4) * (field_width - 4), 256)
         self.fc2 = nn.Linear(256, num_actions)
         self.relu = nn.ReLU()
 
     def forward(self, x):
         x = self.relu(self.conv1(x))
         x = self.dropout(x)
-        x = self.relu(self.conv2d(x))
+        x = self.relu(self.conv2(x))
         x = self.dropout(x)
         x = self.flatten(x)
         x = self.relu(self.fc1(x))
         x = self.dropout(x)
         x = self.fc2(x)
+
+        return x
 
 
 class DQNAgent:
@@ -41,6 +44,8 @@ class DQNAgent:
         self.model = DQNAgentModel(self.field_width, self.field_height, NUM_CHANNELS, NUM_ACTIONS)
         self.target_model = DQNAgentModel(self.field_width, self.field_height, NUM_CHANNELS, NUM_ACTIONS)
 
+        self.loss_fn = nn.MSELoss()
+        self.optimizer = torch.optim.RMSprop(self.model.parameters())
         # self.target_model.set_weights(self.model.get_weights())
         # self.model.summary()
 
@@ -67,7 +72,12 @@ class DQNAgent:
         self.replay_memory.append((current_state, action, reward, next_state, done))
 
     def get_q_values(self, x):
-        return self.model.predict(x)
+        state = torch.tensor(x, dtype=torch.float32)
+        state = rearrange(state, 'b h w c -> b c h w')
+        print(f"x : {x.shape}, state : {state.shape}")
+        # quit()
+        q_values = self.model(state)
+        return q_values.detach().numpy()
 
     def train(self):
         # guarantee the minimum number of samples

@@ -76,16 +76,16 @@ class DQNTrainer:
         while self.current_episode < self.episodes:
             current_state = self.env.reset()
 
-            quit()
-
             done = False
             steps = 0
             while not done and steps < self.max_steps:
-                if random.random() > self.epsilon:
+                if True:
+                # if random.random() > self.epsilon:
                     action = np.argmax(self.agent.get_q_values(np.array([current_state])))
+                    quit()
                 else:
                     action = np.random.randint(NUM_ACTIONS)
-
+                print("while")
 ''' by KH
                 next_state, reward, done = self.env.step(action)
 
