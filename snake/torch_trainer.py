@@ -10,6 +10,7 @@ from summary import Summary
 from level_loader import LevelLoader
 from matplotlib import pyplot as plt
 import time
+import torch
 
 
 class DQNTrainer:
@@ -137,8 +138,16 @@ class DQNTrainer:
 
             # save model, training info
             # by KH -- currently commented
-            # if self.enable_save and self.current_episode % self.save_freq == 0:
-            #     self.save(str(self.current_episode))
+            if self.enable_save and self.current_episode % self.save_freq == 0:
+                str_name_save = self.save_dir + "/model_" + str(self.current_episode) + ".pth"
+                torch.save(self.agent.model.state_dict(), str_name_save)
+                average_length = self.summary.get_average('length')
+                if average_length > self.max_average_length:
+                    self.max_average_length = average_length
+                    str_name_save = self.save_dir + "/best.pth"
+                    print('best model saved - average_length: {}'.format(average_length))
+
+
             #
             #     average_length = self.summary.get_average('length')
             #     if average_length > self.max_average_length:

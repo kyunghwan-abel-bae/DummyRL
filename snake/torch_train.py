@@ -3,7 +3,7 @@ from torch_trainer import DQNTrainer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--level_filepath', type=str, required=True, help='level filepath')
-parser.add_argument('--episodes', type=int, default=30000, help='the number of episodes to train')
+parser.add_argument('--episodes', type=int, default=50000, help='the number of episodes to train')
 parser.add_argument('--initial_epsilon', type=float, default=1.)
 parser.add_argument('--min_epsilon', type=float, default=0.1)
 parser.add_argument('--exploration_ratio', type=float, default=0.5)
