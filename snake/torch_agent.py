@@ -125,6 +125,14 @@ class DQNAgent:
         # loss = hist.history['loss'][0]
         return loss
 
+    # def load(self, model_filepath, target_model_filepath):
+    #     self.model.load_state_dict(torch.load(model_filepath))
+    #     if len(target_model_filepath) == 0:
+    #         target_model_filepath = model_filepath
+    #     self.target_model.load_state_dict(target_model_filepath)
+
+        # self.model = keras.models.load_model(model_filepath)
+        # self.target_model = keras.models.load_model(target_model_filepath)
     '''
     # def increase_target_update_counter(self):
     #     self.target_update_counter += 1

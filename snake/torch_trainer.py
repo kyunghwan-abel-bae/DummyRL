@@ -193,7 +193,13 @@ class DQNTrainer:
                 self.env.save_image(save_path=save_dir+'/{}.png'.format(steps))
 
         return self.env.get_length()
-'''
+
+    def load(self, model_filepath):
+        model_filepath = self.save_dir + "/model_" + model_filepath + ".pth"
+        self.agent.model.load_state_dict(torch.load(model_filepath))
+        self.agent.target_model.load_state_dict(torch.load(model_filepath))
+
+    '''
     def quit(self):
         self.env.quit()
 
