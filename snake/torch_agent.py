@@ -21,6 +21,11 @@ class DQNAgentModel(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
+        x = torch.tensor(x, dtype=torch.float32)
+
+        print(f"x.shape : {x.shape}")
+        x = rearrange(x, 'b h w c -> b c h w')
+
         x = self.relu(self.conv1(x))
         x = self.dropout(x)
         x = self.relu(self.conv2(x))
@@ -30,7 +35,7 @@ class DQNAgentModel(nn.Module):
         x = self.dropout(x)
         x = self.fc2(x)
 
-        return x
+        return x#.detach().numpy()
 
 
 class DQNAgent:
@@ -43,6 +48,7 @@ class DQNAgent:
 
         self.model = DQNAgentModel(self.field_width, self.field_height, NUM_CHANNELS, NUM_ACTIONS)
         self.target_model = DQNAgentModel(self.field_width, self.field_height, NUM_CHANNELS, NUM_ACTIONS)
+        self.target_model.load_state_dict(self.model.state_dict())
 
         self.loss_fn = nn.MSELoss()
         self.optimizer = torch.optim.RMSprop(self.model.parameters())
@@ -72,38 +78,51 @@ class DQNAgent:
         self.replay_memory.append((current_state, action, reward, next_state, done))
 
     def get_q_values(self, x):
-        state = torch.tensor(x, dtype=torch.float32)
-        state = rearrange(state, 'b h w c -> b c h w')
-        print(f"x : {x.shape}, state : {state.shape}")
+        # print(f"x : {x.shape}, state : {state.shape}")
         # quit()
-        q_values = self.model(state)
+        q_values = self.model(x)
         return q_values.detach().numpy()
+        # return self.model(x)
 
     def train(self):
         # guarantee the minimum number of samples
         if len(self.replay_memory) < self.min_replay_memory_size:
             return
-
         # get current q values and next q values
         samples = random.sample(self.replay_memory, self.batch_size)
         current_input = np.stack([sample[0] for sample in samples])
-        current_q_values = self.model.predict(current_input)
+        current_q_values = self.model(current_input)
         next_input = np.stack([sample[3] for sample in samples])
-        next_q_values = self.target_model.predict(next_input)
+        # next_q_values = self.target_model.predict(next_input)
+        next_q_values = self.model(next_input)
 
         # update q values
         for i, (current_state, action, reward, _, done) in enumerate(samples):
             if done:
                 next_q_value = reward
             else:
-                next_q_value = reward + self.gamma * np.max(next_q_values[i])
+                next_q_value = reward + self.gamma * torch.max(next_q_values[i])
             current_q_values[i, action] = next_q_value
 
         # fit model
-        hist = self.model.fit(current_input, current_q_values, batch_size=self.batch_size, verbose=0, shuffle=False)
-        loss = hist.history['loss'][0]
+        # hist = self.model.fit(current_input, current_q_values, batch_size=self.batch_size, verbose=0, shuffle=False)
+        # pred_tensor = torch.tensor(next_q_values, dtype=torch.float32)
+        # target_tensor = torch.tensor(current_q_values, dtype=torch.float32)
+        pred_tensor = next_q_values
+        target_tensor = current_q_values
+
+        # print(f"pred_tensor.shape : {pred_tensor.shape}, target_tensor.shape : {target_tensor.shape}")
+
+        loss = self.loss_fn(pred_tensor, target_tensor)
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        # loss = hist.history['loss'][0]
         return loss
 
+    '''
     # def increase_target_update_counter(self):
     #     self.target_update_counter += 1
     #     if self.target_update_counter >= self.target_update_freq:
@@ -117,3 +136,4 @@ class DQNAgent:
     # def load(self, model_filepath, target_model_filepath):
     #     self.model = keras.models.load_model(model_filepath)
     #     self.target_model = keras.models.load_model(target_model_filepath)
+'''

@@ -79,14 +79,13 @@ class DQNTrainer:
             done = False
             steps = 0
             while not done and steps < self.max_steps:
-                if True:
-                # if random.random() > self.epsilon:
+                # if True:
+                if random.random() > self.epsilon:
                     action = np.argmax(self.agent.get_q_values(np.array([current_state])))
-                    quit()
+                    # quit()
                 else:
                     action = np.random.randint(NUM_ACTIONS)
-                print("while")
-''' by KH
+
                 next_state, reward, done = self.env.step(action)
 
                 self.agent.update_replay_memory(current_state, action, reward, next_state, done)
@@ -155,7 +154,7 @@ class DQNTrainer:
                 self.env.save_image(save_path=save_dir+'/{}.png'.format(steps))
 
         return self.env.get_length()
-
+'''
     def quit(self):
         self.env.quit()
 
