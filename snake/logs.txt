@@ -1,0 +1,3 @@
+episode: 500, epsilon: 0.9700000000000255, average steps: 5.424, maximum length: 7, average length: 4.222, average reward: 0.14, average loss: 0.5673328243670099
+episode: 1000, epsilon: 0.940000000000051, average steps: 5.858, maximum length: 7, average length: 4.212, average reward: 0.09, average loss: 0.8055090117816756
+episode: 1500, epsilon: 0.9100000000000765, average steps: 5.808, maximum length: 8, average length: 4.232, average reward: 0.21, average loss: 0.8194491245447768

@@ -126,7 +126,7 @@ class DQNTrainer:
             list_reward.append(self.env.tot_reward)
 
             # -- by KH -- test
-            if self.current_episode % 100 == 0:
+            if self.current_episode % 15000 == 0:
                 plt.plot(list_episodes, list_loss, label="total loss")
                 plt.plot(list_episodes, list_reward, label="reward")
                 plt.legend()

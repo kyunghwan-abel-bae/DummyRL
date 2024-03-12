@@ -23,7 +23,7 @@ class DQNAgentModel(nn.Module):
     def forward(self, x):
         x = torch.tensor(x, dtype=torch.float32)
 
-        print(f"x.shape : {x.shape}")
+        # print(f"x.shape : {x.shape}")
         x = rearrange(x, 'b h w c -> b c h w')
 
         x = self.relu(self.conv1(x))
