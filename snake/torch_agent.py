@@ -115,10 +115,13 @@ class DQNAgent:
 
         loss = self.loss_fn(pred_tensor, target_tensor)
 
+        # print(f"loss : {loss}")
+
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
 
+        # print(f"loss backward : {loss}")
         # loss = hist.history['loss'][0]
         return loss
 

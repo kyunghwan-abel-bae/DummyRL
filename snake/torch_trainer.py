@@ -8,6 +8,8 @@ import pickle
 import os
 from summary import Summary
 from level_loader import LevelLoader
+from matplotlib import pyplot as plt
+import time
 
 
 class DQNTrainer:
@@ -73,11 +75,18 @@ class DQNTrainer:
 
     def train(self):
         pbar = tqdm(initial=self.current_episode, total=self.episodes, unit='episodes')
+
+        list_episodes = []
+        list_loss = []
+        list_reward = []
+        # plt.plot(list_episodes, list_loss)
+
         while self.current_episode < self.episodes:
             current_state = self.env.reset()
 
             done = False
             steps = 0
+            total_loss = 0.0
             while not done and steps < self.max_steps:
                 # if True:
                 if random.random() > self.epsilon:
@@ -89,7 +98,12 @@ class DQNTrainer:
                 next_state, reward, done = self.env.step(action)
 
                 self.agent.update_replay_memory(current_state, action, reward, next_state, done)
-                self.summary.add('loss', self.agent.train())
+
+                temp_loss = self.agent.train()
+                if temp_loss is not None:
+                    temp_loss = temp_loss.item()
+                    total_loss = total_loss + temp_loss
+                self.summary.add('loss', temp_loss)
 
                 current_state = next_state
                 steps += 1
@@ -105,6 +119,21 @@ class DQNTrainer:
             self.epsilon = max(self.epsilon-self.epsilon_decay, self.min_epsilon)
 
             self.current_episode += 1
+
+            # print(f"list_episodes : {list_episodes}, list_loss : {list_loss}")
+            list_episodes.append(self.current_episode)
+            list_loss.append(total_loss)
+            list_reward.append(self.env.tot_reward)
+
+            # -- by KH -- test
+            if self.current_episode % 100 == 0:
+                plt.plot(list_episodes, list_loss, label="total loss")
+                plt.plot(list_episodes, list_reward, label="reward")
+                plt.legend()
+                plt.show()
+                self.preview(self.render_fps)
+                time.sleep(10)
+                break
 
             # save model, training info
             # by KH -- currently commented
@@ -124,8 +153,9 @@ class DQNTrainer:
             pbar.update(1)
 
             # preview
-            if self.enable_render and self.current_episode % self.render_freq == 0:
-                self.preview(self.render_fps)
+            # if self.enable_render and self.current_episode % self.render_freq == 0:
+            #     self.preview(self.render_fps)
+
 
     def preview(self, render_fps, disable_exploration=False, save_dir=None):
         if save_dir is not None and not os.path.exists(save_dir):
