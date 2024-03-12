@@ -109,7 +109,7 @@ class DQNTrainer:
                 steps += 1
 
             # by KH -- currently commented,
-            # self.agent.increase_target_update_counter()
+            self.agent.increase_target_update_counter()
 
             self.summary.add('length', self.env.get_length())
             self.summary.add('reward', self.env.tot_reward)

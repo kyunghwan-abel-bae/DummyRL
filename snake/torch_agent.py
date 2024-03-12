@@ -94,7 +94,7 @@ class DQNAgent:
         current_q_values = self.model(current_input)
         next_input = np.stack([sample[3] for sample in samples])
         # next_q_values = self.target_model.predict(next_input)
-        next_q_values = self.model(next_input)
+        next_q_values = self.target_model(next_input)
 
         # update q values
         for i, (current_state, action, reward, _, done) in enumerate(samples):
@@ -125,13 +125,13 @@ class DQNAgent:
         # loss = hist.history['loss'][0]
         return loss
 
-    '''
-    # def increase_target_update_counter(self):
-    #     self.target_update_counter += 1
-    #     if self.target_update_counter >= self.target_update_freq:
-    #         self.target_model.set_weights(self.model.get_weights())
-    #         self.target_update_counter = 0
+    def increase_target_update_counter(self):
+        self.target_update_counter += 1
+        if self.target_update_counter >= self.target_update_freq:
+            self.target_model.load_state_dict(self.model.state_dict())
+            self.target_update_counter = 0
 
+    '''
     # def save(self, model_filepath, target_model_filepath):
     #     self.model.save(model_filepath)
     #     self.target_model.save(target_model_filepath)
