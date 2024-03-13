@@ -20,16 +20,17 @@ class DQNTrainer:
                  initial_epsilon=1.,
                  min_epsilon=0.1,
                  exploration_ratio=0.5,
-                 max_steps=2000,
+                 # max_steps=2000, # by KH -- to much
+                 max_steps=500,
                  render_freq=500,
                  enable_render=True,
                  render_fps=20,
                  save_dir='checkpoints',
                  enable_save=True,
-                 save_freq=500,
+                 save_freq=100,
                  gamma=0.99,
                  batch_size=64,
-                 min_replay_memory_size=1000,
+                 min_replay_memory_size=500,
                  replay_memory_size=100000,
                  target_update_freq=5,
                  seed=42
@@ -88,6 +89,9 @@ class DQNTrainer:
             done = False
             steps = 0
             total_loss = 0.0
+
+            penalty = 0
+
             while not done and steps < self.max_steps:
                 # if True:
                 if random.random() > self.epsilon:
@@ -97,6 +101,14 @@ class DQNTrainer:
                     action = np.random.randint(NUM_ACTIONS)
 
                 next_state, reward, done = self.env.step(action)
+
+                if reward == 0:
+                    penalty = 0
+                else:
+                    penalty += 1
+
+                if penalty > 25:
+                    reward = reward * 0.9
 
                 self.agent.update_replay_memory(current_state, action, reward, next_state, done)
 
@@ -127,7 +139,7 @@ class DQNTrainer:
             list_reward.append(self.env.tot_reward)
 
             # -- by KH -- test
-            if self.current_episode % 100 == 0:
+            if self.current_episode % 1000 == 0:
                 plt.plot(list_episodes, list_loss, label="total loss")
                 plt.plot(list_episodes, list_reward, label="reward")
                 plt.legend()
@@ -142,10 +154,12 @@ class DQNTrainer:
                 str_name_save = self.save_dir + "/model_" + str(self.current_episode) + ".pth"
                 torch.save(self.agent.model.state_dict(), str_name_save)
                 average_length = self.summary.get_average('length')
+                print(f"average_length : {average_length}")
                 if average_length > self.max_average_length:
                     self.max_average_length = average_length
-                    str_name_save = self.save_dir + "/best.pth"
+                    str_name_best = self.save_dir + "/best.pth"
                     print('best model saved - average_length: {}'.format(average_length))
+                    torch.save(self.agent.model.state_dict(), str_name_best)
 
 
             #
