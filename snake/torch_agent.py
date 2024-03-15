@@ -92,9 +92,10 @@ class DQNAgent:
         samples = random.sample(self.replay_memory, self.batch_size)
         current_input = np.stack([sample[0] for sample in samples])
         current_q_values = self.model(current_input)
+        current_q_backup_values = current_q_values.clone()
         next_input = np.stack([sample[3] for sample in samples])
         # next_q_values = self.target_model.predict(next_input)
-        next_q_values = self.model(next_input)
+        next_q_values = self.target_model(next_input)
 
         # update q values
         for i, (current_state, action, reward, _, done) in enumerate(samples):
@@ -108,7 +109,8 @@ class DQNAgent:
         # hist = self.model.fit(current_input, current_q_values, batch_size=self.batch_size, verbose=0, shuffle=False)
         # pred_tensor = torch.tensor(next_q_values, dtype=torch.float32)
         # target_tensor = torch.tensor(current_q_values, dtype=torch.float32)
-        pred_tensor = next_q_values
+        # pred_tensor = next_q_values
+        pred_tensor = current_q_backup_values
         target_tensor = current_q_values
 
         # print(f"pred_tensor.shape : {pred_tensor.shape}, target_tensor.shape : {target_tensor.shape}")
@@ -125,18 +127,23 @@ class DQNAgent:
         # loss = hist.history['loss'][0]
         return loss
 
-    '''
-    # def increase_target_update_counter(self):
-    #     self.target_update_counter += 1
-    #     if self.target_update_counter >= self.target_update_freq:
-    #         self.target_model.set_weights(self.model.get_weights())
-    #         self.target_update_counter = 0
+    def increase_target_update_counter(self):
+        self.target_update_counter += 1
+        if self.target_update_counter >= self.target_update_freq:
+            self.target_model.load_state_dict(self.model.state_dict())
+            self.target_update_counter = 0
 
-    # def save(self, model_filepath, target_model_filepath):
-    #     self.model.save(model_filepath)
-    #     self.target_model.save(target_model_filepath)
+    def load(self, model_filepath):
+        self.model.load_state_dict(torch.load(model_filepath))
+        self.target_model.load_state_dict(torch.load(model_filepath))
 
-    # def load(self, model_filepath, target_model_filepath):
-    #     self.model = keras.models.load_model(model_filepath)
-    #     self.target_model = keras.models.load_model(target_model_filepath)
+'''
+
+# def save(self, model_filepath, target_model_filepath):
+#     self.model.save(model_filepath)
+#     self.target_model.save(target_model_filepath)
+
+# def load(self, model_filepath, target_model_filepath):
+#     self.model = keras.models.load_model(model_filepath)
+#     self.target_model = keras.models.load_model(target_model_filepath)
 '''

@@ -10,7 +10,7 @@ from summary import Summary
 from level_loader import LevelLoader
 from matplotlib import pyplot as plt
 import time
-
+import torch
 
 class DQNTrainer:
     def __init__(self,
@@ -87,6 +87,8 @@ class DQNTrainer:
             done = False
             steps = 0
             total_loss = 0.0
+
+            penalty = 0
             while not done and steps < self.max_steps:
                 # if True:
                 if random.random() > self.epsilon:
@@ -96,6 +98,16 @@ class DQNTrainer:
                     action = np.random.randint(NUM_ACTIONS)
 
                 next_state, reward, done = self.env.step(action)
+                '''
+                if reward == 0:
+                    penalty += 1
+                else:
+                    penalty = 0
+
+                if penalty > 25:
+                    reward = -1 + reward * 0.9
+                    penalty = 0
+                '''
 
                 self.agent.update_replay_memory(current_state, action, reward, next_state, done)
 
@@ -109,7 +121,7 @@ class DQNTrainer:
                 steps += 1
 
             # by KH -- currently commented,
-            # self.agent.increase_target_update_counter()
+            self.agent.increase_target_update_counter()
 
             self.summary.add('length', self.env.get_length())
             self.summary.add('reward', self.env.tot_reward)
@@ -126,7 +138,7 @@ class DQNTrainer:
             list_reward.append(self.env.tot_reward)
 
             # -- by KH -- test
-            if self.current_episode % 15000 == 0:
+            if self.current_episode % 50000 == 0:
                 plt.plot(list_episodes, list_loss, label="total loss")
                 plt.plot(list_episodes, list_reward, label="reward")
                 plt.legend()
@@ -137,17 +149,19 @@ class DQNTrainer:
 
             # save model, training info
             # by KH -- currently commented
-            # if self.enable_save and self.current_episode % self.save_freq == 0:
-            #     self.save(str(self.current_episode))
-            #
-            #     average_length = self.summary.get_average('length')
-            #     if average_length > self.max_average_length:
-            #         self.max_average_length = average_length
-            #         self.save('best')
-            #         print('best model saved - average_length: {}'.format(average_length))
-            #
-            #     self.summary.write(self.current_episode, self.epsilon)
-            #     self.summary.clear()
+            if self.enable_save and self.current_episode % self.save_freq == 0:
+                str_name_save = self.save_dir + "/model_" + str(self.current_episode) + ".pth"
+                torch.save(self.agent.model.state_dict(), str_name_save)
+                average_length = self.summary.get_average('length')
+                print(f"epsilon : {self.epsilon}, average_length : {average_length}")
+                if average_length > self.max_average_length:
+                    self.max_average_length = average_length
+                    str_name_best = self.save_dir + "/best.pth"
+                    print('best model saved - average_length: {}'.format(average_length))
+                    torch.save(self.agent.model.state_dict(), str_name_best)
+
+                self.summary.write(self.current_episode, self.epsilon)
+                self.summary.clear()
 
             # update pbar
             pbar.update(1)
@@ -184,7 +198,33 @@ class DQNTrainer:
                 self.env.save_image(save_path=save_dir+'/{}.png'.format(steps))
 
         return self.env.get_length()
+
+    def load(self, model_filepath):
+        model_filepath = self.save_dir + "/" + model_filepath + ".pth"
+        self.agent.load(model_filepath)
+        # self.model.load_state_dict(torch.load(model_filepath))
+        # if len(target_model_filepath) == 0:
+        #     target_model_filepath = model_filepath
+        #     self.target_model.load_state_dict(target_model_filepath)
+
+    '''
+    def load(self, suffix):
+        self.agent.load(
+            self.save_dir + '/model_{}.h5'.format(suffix),
+            self.save_dir + '/target_model_{}.h5'.format(suffix)
+        )
+
+        with open(self.save_dir + '/training_info_{}.pkl'.format(suffix), 'rb') as fin:
+            dic = pickle.load(fin)
+
+        self.agent.replay_memory = dic['replay_memory']
+        self.agent.target_update_counter = dic['target_update_counter']
+        self.current_episode = dic['current_episode']
+        self.epsilon = dic['epsilon']
+        self.summary = dic['summary']
+        self.max_average_length = dic['max_average_length']
 '''
+    '''
     def quit(self):
         self.env.quit()
 
