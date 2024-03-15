@@ -88,6 +88,7 @@ class DQNTorchAgent:
 
         current_input = torch.tensor([sample[0] for sample in samples], dtype=torch.float32).to(device)
         current_q_values = self.model(current_input)
+        current_q_backup_values = current_q_values.clone()
 
         next_input = torch.tensor([sample[3] for sample in samples], dtype=torch.float32).to(device)
         next_q_values = self.model(next_input)
@@ -99,7 +100,7 @@ class DQNTorchAgent:
                 next_q_value = reward + self.gamma * torch.max(next_q_values[i])
             current_q_values[i, action] = next_q_value
 
-        pred_tensor = next_q_values
+        pred_tensor = current_q_backup_values
         target_tensor = current_q_values
         loss = self.loss_fn(pred_tensor, target_tensor)
 

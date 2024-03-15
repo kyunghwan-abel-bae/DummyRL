@@ -79,7 +79,6 @@ class DQNTrainer:
         list_episodes = []
         list_loss = []
         list_reward = []
-        # plt.plot(list_episodes, list_loss)
 
         while self.current_episode < self.episodes:
             current_state = self.env.reset()
@@ -88,26 +87,13 @@ class DQNTrainer:
             steps = 0
             total_loss = 0.0
 
-            penalty = 0
             while not done and steps < self.max_steps:
-                # if True:
                 if random.random() > self.epsilon:
                     action = np.argmax(self.agent.get_q_values(np.array([current_state])))
-                    # quit()
                 else:
                     action = np.random.randint(NUM_ACTIONS)
 
                 next_state, reward, done = self.env.step(action)
-                '''
-                if reward == 0:
-                    penalty += 1
-                else:
-                    penalty = 0
-
-                if penalty > 25:
-                    reward = -1 + reward * 0.9
-                    penalty = 0
-                '''
 
                 self.agent.update_replay_memory(current_state, action, reward, next_state, done)
 
@@ -120,7 +106,6 @@ class DQNTrainer:
                 current_state = next_state
                 steps += 1
 
-            # by KH -- currently commented,
             self.agent.increase_target_update_counter()
 
             self.summary.add('length', self.env.get_length())
@@ -132,13 +117,13 @@ class DQNTrainer:
 
             self.current_episode += 1
 
-            # print(f"list_episodes : {list_episodes}, list_loss : {list_loss}")
             list_episodes.append(self.current_episode)
             list_loss.append(total_loss)
             list_reward.append(self.env.tot_reward)
 
-            # -- by KH -- test
+            # added by KH - For analysis, trainer is done in middle of training
             if self.current_episode % 20000 == 0:
+                # list_loss shows strange values(significant high value)
                 # plt.plot(list_episodes, list_loss, label="total loss")
                 plt.plot(list_episodes, list_reward, label="reward")
                 plt.legend()
@@ -148,7 +133,6 @@ class DQNTrainer:
                 break
 
             # save model, training info
-            # by KH -- currently commented
             if self.enable_save and self.current_episode % self.save_freq == 0:
                 str_name_save = self.save_dir + "/model_" + str(self.current_episode) + ".pth"
                 torch.save(self.agent.model.state_dict(), str_name_save)
@@ -202,63 +186,3 @@ class DQNTrainer:
     def load(self, model_filepath):
         model_filepath = self.save_dir + "/" + model_filepath + ".pth"
         self.agent.load(model_filepath)
-        # self.model.load_state_dict(torch.load(model_filepath))
-        # if len(target_model_filepath) == 0:
-        #     target_model_filepath = model_filepath
-        #     self.target_model.load_state_dict(target_model_filepath)
-
-    '''
-    def load(self, suffix):
-        self.agent.load(
-            self.save_dir + '/model_{}.h5'.format(suffix),
-            self.save_dir + '/target_model_{}.h5'.format(suffix)
-        )
-
-        with open(self.save_dir + '/training_info_{}.pkl'.format(suffix), 'rb') as fin:
-            dic = pickle.load(fin)
-
-        self.agent.replay_memory = dic['replay_memory']
-        self.agent.target_update_counter = dic['target_update_counter']
-        self.current_episode = dic['current_episode']
-        self.epsilon = dic['epsilon']
-        self.summary = dic['summary']
-        self.max_average_length = dic['max_average_length']
-'''
-    '''
-    def quit(self):
-        self.env.quit()
-
-    def save(self, suffix):
-        self.agent.save(
-            self.save_dir+'/model_{}.h5'.format(suffix),
-            self.save_dir+'/target_model_{}.h5'.format(suffix)
-        )
-
-        dic = {
-            'replay_memory': self.agent.replay_memory,
-            'target_update_counter': self.agent.target_update_counter,
-            'current_episode': self.current_episode,
-            'epsilon': self.epsilon,
-            'summary': self.summary,
-            'max_average_length': self.max_average_length
-        }
-
-        with open(self.save_dir+'/training_info_{}.pkl'.format(suffix), 'wb') as fout:
-            pickle.dump(dic, fout)
-
-    def load(self, suffix):
-        self.agent.load(
-            self.save_dir+'/model_{}.h5'.format(suffix),
-            self.save_dir+'/target_model_{}.h5'.format(suffix)
-        )
-
-        with open(self.save_dir+'/training_info_{}.pkl'.format(suffix), 'rb') as fin:
-            dic = pickle.load(fin)
-
-        self.agent.replay_memory = dic['replay_memory']
-        self.agent.target_update_counter = dic['target_update_counter']
-        self.current_episode = dic['current_episode']
-        self.epsilon = dic['epsilon']
-        self.summary = dic['summary']
-        self.max_average_length = dic['max_average_length']
-'''

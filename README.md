@@ -6,7 +6,27 @@
 - Python_RL_Envs : https://github.com/jellyho/Python_RL_Envs/tree/2aab22dc93b3d2e0380080822a11e395db340c41
 
 브랜치 : 
-- feature-snake-torch
+
+
+2024.03.15
+- feature-snake-torch, feature-torch-colab에서 정상적으로 학습을 한다.
+- 학습된 결과는 코랩,로컬(레노버),로컬(맥북) 어디에서나 동작함을 확인할 수 있다.
+- torch에서 loss함수에 대한 인자 설정이 잘못되어 DQNTorchAgent도 수정해야한다.
+- 이 인자 설정 때문에 제대로 된 학습이 이뤄지지 않았다.
+- 코드들은 적당히 깨끗이 정리했다.
+- 추가적인 연습은 더 필요없을 것으로 보이며 자료들은 참고 자료로 활용한다.
+- 간단한 토치 학습 : dqn_torch_test01
+- 토치 기반 뱀 게임 : torch_train
+
+
+2024.03.12
+- feature-snake-torch를 생성하여 토치화한다.
+- torch를 기반으로 하기 위해 모델을 정의하고 forward함수를 chatgpt를 기반으로 작성했다.
+- 모델에 인자 값들 중 conv를 고려해서 작성해야하는 수식과 개념을 파이토치 노트에 작성했다.
+- torch에서 예상하는 인자 순서가 있어, 공부해뒀던 einops를 적용하여 채널의 숫자를 rearrange해줬다.
+- tf와 달리 가중치를 저장 및 불러오는 함수가 달라서 반영했다.
+- 학습 검증에 시간이 걸리기 때문에 colab화를 병행해서 처리하도록 한다. feature-torch-colab이라는 branch를 생성하여 실험한다.
+- 지금 타겟 모델을 검증하고 있기 때문에 유효한 플롯을 만들기 위해 feature-torch-colab을 사용한다. 
 
 2024.03.11
 - 실제적인 구현을 위해 current_state의 구조를 노트에 메모하고 분석하게 됐다.
