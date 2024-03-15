@@ -1,5 +1,4 @@
 import argparse
-# from dqn_trainer import DQNTrainer
 from torch_trainer import DQNTrainer
 
 parser = argparse.ArgumentParser()
